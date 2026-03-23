@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservations — {{ event.title }}{% endblock %}
+
+{% block body %}
+
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('admin_event_index') }}">Administration</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    Réservations  {{ event.title }}
+                </li>
+            </ol>
+        </nav>
+        <h1 class="fw-bold">
+             Réservations  {{ event.title }}
+        </h1>
+        <p class="text-muted">
+             {{ event.date|date('d/m/Y à H:i') }}
+            &nbsp;|&nbsp;
+             {{ event.location }}
+            &nbsp;|&nbsp;
+             {{ event.seats }} place(s) restante(s)
+        </p>
+    </div>
+    <div class="col-auto">
+        <a href="{{ path('admin_event_index') }}"
+           class="btn btn-outline-secondary">
+            Retour
+        </a>
+    </div>
+</div>
+
+{% if reservations is empty %}
+    <div class="alert alert-info">
+        Aucune réservation pour cet événement.
+    </div>
+{% else %}
+    {# Compteur #}
+    <div class="alert alert-success">
+         <strong>{{ reservations|length }}</strong> réservation(s) enregistrée(s)
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Date réservation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <strong>{{ reservation.name }}</strong>
+                            </td>
+                            <td>
+                                <a href="mailto:{{ reservation.email }}">
+                                    {{ reservation.email }}
+                                </a>
+                            </td>
+                            <td>{{ reservation.phone }}</td>
+                            <td>
+                                {{ reservation.createdAt
+                                    ? reservation.createdAt|date('d/m/Y à H:i')
+                                    : 'N/A' }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

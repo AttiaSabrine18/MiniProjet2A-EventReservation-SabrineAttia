@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver — {{ event.title }}{% endblock %}
+
+{% block body %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('app_home') }}">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ path('app_event_show', {id: event.id}) }}">
+                        {{ event.title }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item active">Réservation</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"> Réserver  {{ event.title }}</h4>
+            </div>
+            <div class="card-body">
+
+                {# Rappel des infos de l'événement #}
+                <div class="alert alert-info mb-4">
+                     {{ event.date|date('d/m/Y à H:i') }}
+                    &nbsp;|&nbsp;
+                     {{ event.location }}
+                    &nbsp;|&nbsp;
+                     {{ event.seats }} place(s) restante(s)
+                </div>
+
+                {# Formulaire de réservation #}
+                {{ form_start(form) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.phone) }}
+                        {{ form_widget(form.phone) }}
+                        {{ form_errors(form.phone) }}
+                    </div>
+
+                    {# Bouton submit dans le template — pas dans le formulaire PHP #}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                             Confirmer ma réservation
+                        </button>
+                    </div>
+
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservation confirmée !{% endblock %}
+
+{% block body %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+
+        <div class="card shadow border-success">
+            <div class="card-body py-5">
+
+                <div style="font-size: 5rem;">🎉</div>
+
+                <h2 class="fw-bold text-success mt-3">
+                    Réservation confirmée !
+                </h2>
+
+                <p class="lead mt-3">
+                    Merci <strong>{{ reservation.name }}</strong> !<br>
+                    Votre réservation pour
+                    <strong>{{ reservation.event.title }}</strong>
+                    a bien été enregistrée.
+                </p>
+
+                <hr>
+
+                {# Récapitulatif #}
+                <div class="text-start mt-3">
+                    <h5 class="fw-bold"> Récapitulatif</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                             <strong>Nom :</strong> {{ reservation.name }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Email :</strong> {{ reservation.email }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Téléphone :</strong> {{ reservation.phone }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Événement :</strong>
+                            {{ reservation.event.title }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Date :</strong>
+                            {{ reservation.event.date|date('d/m/Y à H:i') }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Lieu :</strong>
+                            {{ reservation.event.location }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{{ path('app_home') }}" class="btn btn-primary">
+                         Retour aux événements
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

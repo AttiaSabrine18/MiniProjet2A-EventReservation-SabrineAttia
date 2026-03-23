@@ -1,0 +1,77 @@
+{# templates/admin/event/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un événement{% endblock %}
+
+{% block body %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Créer un nouvel événement</h4>
+            </div>
+            <div class="card-body">
+
+                {# enctype obligatoire pour l'upload de fichier #}
+                {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.title) }}
+                        {{ form_widget(form.title) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.date) }}
+                            {{ form_widget(form.date) }}
+                            {{ form_errors(form.date) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.location) }}
+                            {{ form_widget(form.location) }}
+                            {{ form_errors(form.location) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.seats) }}
+                            {{ form_widget(form.seats) }}
+                            {{ form_errors(form.seats) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.imageFile) }}
+                            {{ form_widget(form.imageFile) }}
+                            {{ form_errors(form.imageFile) }}
+                            <small class="text-muted">
+                                Formats acceptés : JPG, PNG, WEBP (max 2MB)
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                             Créer l'événement
+                        </button>
+                        <a href="{{ path('admin_event_index') }}"
+                           class="btn btn-outline-secondary">
+                            ← Annuler
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

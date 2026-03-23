@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Événements disponibles{% endblock %}
+
+{% block body %}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="fw-bold">Événements disponibles</h1>
+        <p class="text-muted">Découvrez et réservez vos événements</p>
+    </div>
+    <div class="col-auto">
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('admin_event_new') }}" class="btn btn-success">
+                 Ajouter un événement
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+{% if events is empty %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Aucun événement disponible pour le moment. Revenez bientôt !
+    </div>
+{% else %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for event in events %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+
+                    {# Image de l'événement #}
+                    {% if event.image %}
+                        <img src="{{ asset('uploads/events/' ~ event.image) }}"
+                             class="card-img-top"
+                             alt="{{ event.title }}"
+                             style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center"
+                             style="height: 200px;">
+                            <span style="font-size: 3rem;">🎫</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ event.title }}</h5>
+                        <p class="card-text text-muted">
+                            {{ event.description|length > 100
+                                ? event.description|slice(0, 100) ~ '...'
+                                : event.description }}
+                        </p>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                             <strong>Date :</strong>
+                            {{ event.date|date('d/m/Y à H:i') }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Lieu :</strong> {{ event.location }}
+                        </li>
+                        <li class="list-group-item">
+                             <strong>Places :</strong>
+                            {% if event.seats > 0 %}
+                                <span class="badge bg-success">
+                                    {{ event.seats }} disponibles
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">Complet</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+
+                    <div class="card-footer">
+                        <a href="{{ path('app_event_show', {id: event.id}) }}"
+                           class="btn btn-outline-primary w-100">
+                            Voir les détails →
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}

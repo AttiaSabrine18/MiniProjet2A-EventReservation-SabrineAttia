@@ -1,43 +1,84 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # ================================================
+    # HASHAGE DES MOTS DE PASSE
+    # ================================================
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+
+    # ================================================
+    # PROVIDERS — Comment charger l'utilisateur
+    
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
+
+    # FIREWALLS 
+
     firewalls:
+
+        # Désactive la sécurité pour les outils de développement
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        # Routes publiques d'authentification Passkey
+        # Pas besoin d'être connecté pour s'enregistrer ou se connecter
+        auth_api:
+            pattern: ^/api/auth/(register|login)
+            stateless: true
+            security: false
+
+        # API principale — protégée par JWT
+        # Toute requête doit avoir un token JWT valide
+        api:
+            pattern: ^/api
+            stateless: true
+            # Active l'authentification JWT
+            jwt: ~
+            # Active le refresh token
+            refresh_jwt:
+                check_path: /api/token/refresh
+            entry_point: jwt
+
+        # Firewall principal pour les pages web (login/logout classique)
         main:
             lazy: true
             provider: app_user_provider
+            # Formulaire de connexion classique
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                default_target_path: /
+            logout:
+                path: app_logout
+                target: app_login
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+   
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # ---- Routes publiques (pas besoin d'être connecté) ----
+        - { path: ^/api/auth/(register|login), roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/event, roles: PUBLIC_ACCESS }
+        # ---- Routes admin (réservées aux admins) ----
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
+        # ---- Routes API protégées par JWT ----
+        - { path: ^/api, roles: ROLE_USER }
+
+        # ---- Routes utilisateur connecté ----
+        - { path: ^/, roles: ROLE_USER }
+
+# CONFIG SPÉCIALE POUR LES TESTS — Ne pas modifier
 when@test:
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
+                cost: 4        # Lowest possible value for bcrypt
+                time_cost: 3   # Lowest possible value for argon
                 memory_cost: 10 # Lowest possible value for argon

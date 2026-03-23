@@ -1,0 +1,66 @@
+{# templates/admin/reservations/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Toutes les réservations{% endblock %}
+
+{% block body %}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="fw-bold">Toutes les réservations</h1>
+        <p class="text-muted">Liste complète de toutes les réservations</p>
+    </div>
+</div>
+
+{% if reservations is empty %}
+    <div class="alert alert-info">
+        Aucune réservation pour le moment.
+    </div>
+{% else %}
+    <div class="alert alert-success">
+         <strong>{{ reservations|length }}</strong> réservation(s) au total
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Événement</th>
+                        <th>Date réservation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ reservation.name }}</strong></td>
+                            <td>
+                                <a href="mailto:{{ reservation.email }}">
+                                    {{ reservation.email }}
+                                </a>
+                            </td>
+                            <td>{{ reservation.phone }}</td>
+                            <td>
+                                <a href="{{ path('app_event_show', {id: reservation.event.id}) }}">
+                                    {{ reservation.event.title }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ reservation.createdAt
+                                    ? reservation.createdAt|date('d/m/Y à H:i')
+                                    : 'N/A' }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

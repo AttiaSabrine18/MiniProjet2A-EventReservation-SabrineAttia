@@ -40,4 +40,23 @@ class WebauthnCredentialRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+public function saveCredential(User $user, PublicKeyCredentialSource $credentialSource): void
+{
+    // On "hydrate" notre entité avec les données du credential source
+    $webauthnCredential = new WebauthnCredential(
+        $credentialSource->getPublicKeyCredentialId(),
+        $credentialSource->getType(),
+        $credentialSource->getTransports(),
+        $credentialSource->getAttestationType(),
+        $credentialSource->getTrustPath(),
+        $credentialSource->getAaguid(),
+        $credentialSource->getCredentialPublicKey(),
+        $credentialSource->getUserHandle(),
+        $credentialSource->getCounter()
+    );
+    $webauthnCredential->setUser($user);
+    $this->getEntityManager()->persist($webauthnCredential);
+    $this->getEntityManager()->flush();
+}
 }

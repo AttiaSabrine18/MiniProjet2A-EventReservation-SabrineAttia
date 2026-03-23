@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier — {{ event.title }}{% endblock %}
+
+{% block body %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('admin_event_index') }}">Administration</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    Modifier  {{ event.title }}
+                </li>
+            </ol>
+        </nav>
+
+        <div class="card shadow">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0"> Modifier {{ event.title }}</h4>
+            </div>
+            <div class="card-body">
+
+                {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.title) }}
+                        {{ form_widget(form.title) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.date) }}
+                            {{ form_widget(form.date) }}
+                            {{ form_errors(form.date) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.location) }}
+                            {{ form_widget(form.location) }}
+                            {{ form_errors(form.location) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.seats) }}
+                            {{ form_widget(form.seats) }}
+                            {{ form_errors(form.seats) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.image) }}
+                            {% if event.image %}
+                                <div class="mb-2">
+                                    <img src="{{ asset('uploads/events/' ~ event.image) }}"
+                                         class="img-thumbnail"
+                                         style="height: 80px;">
+                                    <small class="text-muted d-block">
+                                        Image actuelle
+                                    </small>
+                                </div>
+                            {% endif %}
+                            {{ form_widget(form.image) }}
+                            {{ form_errors(form.image) }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                             Enregistrer les modifications
+                        </button>
+                        <a href="{{ path('admin_event_index') }}"
+                           class="btn btn-outline-secondary">
+                             Annuler
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

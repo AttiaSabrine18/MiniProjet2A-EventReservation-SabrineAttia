@@ -1,0 +1,93 @@
+{# templates/admin/event/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration — Événements{% endblock %}
+
+{% block body %}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="fw-bold">Administration — Événements</h1>
+        <p class="text-muted">Gérez tous les événements de la plateforme</p>
+    </div>
+    <div class="col-auto">
+        <a href="{{ path('admin_event_new') }}" class="btn btn-success">
+            Nouvel événement
+        </a>
+    </div>
+</div>
+
+{% if events is empty %}
+    <div class="alert alert-info">
+        Aucun événement créé pour le moment.
+        <a href="{{ path('admin_event_new') }}">Créer le premier !</a>
+    </div>
+{% else %}
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Titre</th>
+                        <th>Date</th>
+                        <th>Lieu</th>
+                        <th>Places</th>
+                        <th>Réservations</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td>
+                                <strong>{{ event.title }}</strong>
+                            </td>
+                            <td>{{ event.date|date('d/m/Y H:i') }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>
+                                {% if event.seats > 0 %}
+                                    <span class="badge bg-success">
+                                        {{ event.seats }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">Complet</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_event_reservations', {id: event.id}) }}"
+                                   class="badge bg-info text-decoration-none">
+                                    {{ event.reservations|length }} réservation(s)
+                                </a>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ path('app_event_show', {id: event.id}) }}"
+                                       class="btn btn-outline-primary"
+                                       title="Voir">
+                                        
+                                    </a>
+                                    <a href="{{ path('admin_event_edit', {id: event.id}) }}"
+                                       class="btn btn-outline-warning"
+                                       title="Modifier">
+                                    
+                                    </a>
+                                    <form method="post"
+                                          action="{{ path('admin_event_delete', {id: event.id}) }}"
+                                          onsubmit="return confirm('Supprimer cet événement ?')">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ event.id) }}">
+                                        <button class="btn btn-outline-danger" title="Supprimer">
+                                            
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
