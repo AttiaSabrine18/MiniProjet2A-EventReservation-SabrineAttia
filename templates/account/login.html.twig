@@ -85,7 +85,7 @@ document.getElementById('btn-passkey-login').addEventListener('click', async () 
     const btn = document.getElementById('btn-passkey-login');
 
     btn.disabled = true;
-    status.innerHTML = '<div class="alert alert-info">🔐 Authentification en cours...</div>';
+    status.innerHTML = '<div class="alert alert-info"> Authentification en cours...</div>';
 
     try {
         const resultat = await loginWithPasskey();
@@ -98,7 +98,7 @@ document.getElementById('btn-passkey-login').addEventListener('click', async () 
             localStorage.setItem('refresh_token', resultat.refresh_token);
             localStorage.setItem('user_info', JSON.stringify(resultat.user));
             
-            status.innerHTML = '<div class="alert alert-success">✅ Connexion réussie ! Redirection...</div>';
+            status.innerHTML = '<div class="alert alert-success"> Connexion réussie ! Redirection...</div>';
             
             // FORCER LE RECHARGEMENT COMPLET DE LA PAGE
             setTimeout(() => {
@@ -106,16 +106,16 @@ document.getElementById('btn-passkey-login').addEventListener('click', async () 
             }, 1000);
             
         } else if (resultat && resultat.requires_verification) {
-            status.innerHTML = '<div class="alert alert-warning">⚠️ Email non vérifié. Veuillez vérifier votre boîte mail.</div>';
+            status.innerHTML = '<div class="alert alert-warning"> Email non vérifié. Veuillez vérifier votre boîte mail.</div>';
             btn.disabled = false;
         } else {
-            status.innerHTML = '<div class="alert alert-warning">⚠️ Connexion réussie mais token manquant</div>';
+            status.innerHTML = '<div class="alert alert-warning"> Connexion réussie mais token manquant</div>';
             btn.disabled = false;
         }
 
     } catch (error) {
         console.error('Erreur:', error);
-        status.innerHTML = `<div class="alert alert-danger">❌ ${error.message}</div>`;
+        status.innerHTML = `<div class="alert alert-danger"> ${error.message}</div>`;
         btn.disabled = false;
     }
 });
