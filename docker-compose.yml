@@ -1,0 +1,59 @@
+services:
+  php:
+    image: php:8.2-fpm
+    container_name: eventreservation_php
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+      - DATABASE_URL=mysql://appuser:apppass@db:3306/event_reservation_db
+      - JWT_PASSPHRASE=ChangeMe123!
+      - APP_DOMAIN=localhost
+      - WEBAUTHN_RP_NAME=EventReservation
+      - MAILER_DSN=smtp://mailer:1025
+      - MAILER_FROM=noreply@eventreservation.com
+      - CORS_ALLOW_ORIGIN=*
+      - DEFAULT_URI=http://localhost
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: eventreservation_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - php
+    networks:
+      - app_network
+
+  db:
+    image: mariadb:10.11
+    container_name: eventreservation_db
+    environment:
+      MYSQL_DATABASE: event_reservation_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3307:3306"
+    networks:
+      - app_network
+
+  mailer:
+    image: mailhog/mailhog
+    container_name: eventreservation_mailer
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

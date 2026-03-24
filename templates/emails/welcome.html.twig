@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #27ae60;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #27ae60;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Bienvenue sur Event Reservation !</h1>
+        </div>
+        <div class="content">
+            <h2>Bonjour {{ user.email }} !</h2>
+            <p>Votre compte a été activé avec succès.</p>
+            <p>Vous pouvez maintenant :</p>
+            <ul>
+                <li> Consulter tous les événements disponibles</li>
+                <li> Réserver vos places en ligne</li>
+                <li> Recevoir des confirmations de réservation</li>
+            </ul>
+            
+            <div style="text-align: center;">
+                <a href="{{ url('app_login') }}" class="button">
+                     Se connecter
+                </a>
+            </div>
+            
+            <p>Nous sommes ravis de vous compter parmi nos utilisateurs !</p>
+        </div>
+        <div class="footer">
+            <p>© {{ "now"|date("Y") }} Event Reservation</p>
+        </div>
+    </div>
+</body>
+</html>

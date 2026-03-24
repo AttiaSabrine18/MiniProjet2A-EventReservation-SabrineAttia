@@ -62,6 +62,8 @@ security:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-email, roles: PUBLIC_ACCESS }  # ← Ajoute cette ligne
+        - { path: ^/check-email, roles: PUBLIC_ACCESS }  
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/event, roles: PUBLIC_ACCESS }
         # ---- Routes admin (réservées aux admins) ----

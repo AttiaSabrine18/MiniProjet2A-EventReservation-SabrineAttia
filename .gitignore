@@ -2,6 +2,9 @@
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
+.env.test
+config/jwt/private.pem
+config/jwt/public.pem
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/

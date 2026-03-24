@@ -23,7 +23,7 @@ services:
 
     # Configuration spéciale pour PasskeyAuthService
     # On lui passe les variables d'environnement manuellement
-    App\Service\PasskeyAuthService:
+    App\Service\SimplePasskeyService:
         arguments:
             $rpName: '%env(WEBAUTHN_RP_NAME)%'
             $rpId: '%env(APP_DOMAIN)%'

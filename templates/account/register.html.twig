@@ -9,14 +9,24 @@
 
         <div class="card shadow mt-4">
             <div class="card-header bg-success text-white text-center">
-                <h4 class="mb-0">Inscription</h4>
+                <h4 class="mb-0"> Inscription</h4>
             </div>
             <div class="card-body">
+
+                {# Messages flash #}
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
 
                 {# ====== INSCRIPTION CLASSIQUE ====== #}
                 <form method="post" action="{{ path('app_register') }}" id="form-register">
                     <div class="mb-3">
-                        <label class="form-label">📧 Email</label>
+                        <label class="form-label"> Email</label>
                         <input type="email"
                                name="email"
                                id="register-email"
@@ -25,7 +35,7 @@
                                required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">🔑 Mot de passe</label>
+                        <label class="form-label"> Mot de passe</label>
                         <input type="password"
                                name="password"
                                class="form-control"
@@ -44,7 +54,7 @@
 
                 {# Séparateur #}
                 <div class="text-center my-3">
-                    <span class="text-muted"> ou </span>
+                    <span class="text-muted">━━━━━━━━━━━━ ou ━━━━━━━━━━━━</span>
                 </div>
 
                 {# ====== INSCRIPTION AVEC PASSKEY ====== #}
@@ -86,28 +96,46 @@
 {% block javascripts %}
 <script>
 document.getElementById('btn-passkey-register').addEventListener('click', async () => {
-    const email  = document.getElementById('passkey-email').value;
+    const email = document.getElementById('passkey-email').value;
     const status = document.getElementById('passkey-status');
-    const btn    = document.getElementById('btn-passkey-register');
+    const btn = document.getElementById('btn-passkey-register');
 
     if (!email) {
-        status.innerHTML = '<div class="alert alert-warning">⚠️ Entrez votre email d\'abord</div>';
+        status.innerHTML = '<div class="alert alert-warning"> Entrez votre email d\'abord</div>';
         return;
     }
 
     btn.disabled = true;
-    status.innerHTML = '<div class="alert alert-info">⏳ Création de la Passkey...</div>';
+    status.innerHTML = '<div class="alert alert-info"> Création de la Passkey...</div>';
 
     try {
-        const result = await registerPasskey(email, email);
-
-        status.innerHTML = '<div class="alert alert-success">✅ Inscription réussie !</div>';
-
-        // Redirige vers l'accueil
-        setTimeout(() => { window.location.href = '/'; }, 1000);
+        const resultat = await registerPasskey(email, email);
+        
+        if (resultat && resultat.requires_verification) {
+            status.innerHTML = '<div class="alert alert-success"> Inscription réussie ! Un email de vérification vous a été envoyé.</div>';
+            
+            // Rediriger vers la page de connexion avec le message
+            setTimeout(() => {
+                window.location.href = '/login?requires_verification=1&email=' + encodeURIComponent(email);
+            }, 2000);
+        } else if (resultat && resultat.token) {
+            localStorage.setItem('jwt_token', resultat.token);
+            localStorage.setItem('refresh_token', resultat.refresh_token);
+            localStorage.setItem('user_info', JSON.stringify(resultat.user));
+            
+            status.innerHTML = '<div class="alert alert-success"> Connexion réussie ! Redirection...</div>';
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            status.innerHTML = '<div class="alert alert-warning"> ' + (resultat.message || 'Inscription réussie') + '</div>';
+            btn.disabled = false;
+        }
 
     } catch (error) {
-        status.innerHTML = `<div class="alert alert-danger">❌ ${error.message}</div>`;
+        console.error('Erreur:', error);
+        status.innerHTML = `<div class="alert alert-danger"> ${error.message}</div>`;
         btn.disabled = false;
     }
 });

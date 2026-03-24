@@ -17,25 +17,43 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // ====== CRÉER UN ADMIN ======
-        $admin = new User();
-        $admin->setEmail('admin@test.com');
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword(
-            $this->passwordHasher->hashPassword($admin, 'admin123')
-        );
-        $manager->persist($admin);
+        // ====== VÉRIFIER SI L'ADMIN EXISTE DÉJÀ ======
+        $existingAdmin = $manager->getRepository(User::class)->findOneBy(['email' => 'admin@test.com']);
+        
+        if (!$existingAdmin) {
+            // ====== CRÉER UN ADMIN ======
+            $admin = new User();
+            $admin->setEmail('admin@test.com');
+            $admin->setRoles(['ROLE_ADMIN']);
+            $admin->setPassword(
+                $this->passwordHasher->hashPassword($admin, 'admin123')
+            );
+            $admin->setIsVerified(true); // Admin directement vérifié
+            $manager->persist($admin);
+            echo "Admin créé\n";
+        } else {
+            echo "Admin existe déjà\n";
+        }
 
-        // ====== CRÉER UN UTILISATEUR ======
-        $user = new User();
-        $user->setEmail('sabrine@test.com');
-        $user->setRoles(['ROLE_USER']);
-        $user->setPassword(
-            $this->passwordHasher->hashPassword($user, 'user123')
-        );
-        $manager->persist($user);
+        // ====== VÉRIFIER SI L'UTILISATEUR EXISTE DÉJÀ ======
+        $existingUser = $manager->getRepository(User::class)->findOneBy(['email' => 'sabrine@test.com']);
+        
+        if (!$existingUser) {
+            // ====== CRÉER UN UTILISATEUR ======
+            $user = new User();
+            $user->setEmail('sabrine@test.com');
+            $user->setRoles(['ROLE_USER']);
+            $user->setPassword(
+                $this->passwordHasher->hashPassword($user, 'user123')
+            );
+            $user->setIsVerified(true);
+            $manager->persist($user);
+            echo "Utilisateur créé\n";
+        } else {
+            echo "Utilisateur existe déjà\n";
+        }
 
-        // ====== CRÉER DES ÉVÉNEMENTS ======
+        // ====== CRÉER LES ÉVÉNEMENTS (uniquement s'ils n'existent pas) ======
         $events = [
             [
                 'title'       => 'Concert Jazz Night',
@@ -80,16 +98,25 @@ class AppFixtures extends Fixture
         ];
 
         foreach ($events as $eventData) {
-            $event = new Event();
-            $event->setTitle($eventData['title']);
-            $event->setDescription($eventData['description']);
-            $event->setDate($eventData['date']);
-            $event->setLocation($eventData['location']);
-            $event->setSeats($eventData['seats']);
-            $event->setImage($eventData['image']);
-            $manager->persist($event);
+            // Vérifier si l'événement existe déjà
+            $existingEvent = $manager->getRepository(Event::class)->findOneBy(['title' => $eventData['title']]);
+            
+            if (!$existingEvent) {
+                $event = new Event();
+                $event->setTitle($eventData['title']);
+                $event->setDescription($eventData['description']);
+                $event->setDate($eventData['date']);
+                $event->setLocation($eventData['location']);
+                $event->setSeats($eventData['seats']);
+                $event->setImage($eventData['image']);
+                $manager->persist($event);
+                echo "Événement '{$eventData['title']}' créé\n";
+            } else {
+                echo "Événement '{$eventData['title']}' existe déjà\n";
+            }
         }
 
         $manager->flush();
+        echo "Fixtures chargées avec succès !\n";
     }
 }

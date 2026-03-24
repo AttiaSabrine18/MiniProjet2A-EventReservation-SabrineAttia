@@ -1,10 +1,13 @@
 <?php
+// src/Repository/WebauthnCredentialRepository.php
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\WebauthnCredential;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Webauthn\PublicKeyCredentialSource;
 
 /**
  * @extends ServiceEntityRepository<WebauthnCredential>
@@ -16,47 +19,51 @@ class WebauthnCredentialRepository extends ServiceEntityRepository
         parent::__construct($registry, WebauthnCredential::class);
     }
 
-//    /**
-//     * @return WebauthnCredential[] Returns an array of WebauthnCredential objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('w')
-//            ->andWhere('w.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('w.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Sauvegarde une nouvelle credential en base
+     */
+    public function saveCredential(User $user, PublicKeyCredentialSource $credentialSource): void
+    {
+        // Créer l'entité WebauthnCredential
+        $webauthnCredential = new WebauthnCredential(
+            $credentialSource->getPublicKeyCredentialId(),
+            $credentialSource->getType(),
+            $credentialSource->getTransports(),
+            $credentialSource->getAttestationType(),
+            $credentialSource->getTrustPath(),
+            $credentialSource->getAaguid(),
+            $credentialSource->getCredentialPublicKey(),
+            $credentialSource->getUserHandle(),
+            $credentialSource->getCounter()
+        );
+        
+        $webauthnCredential->setUser($user);
+        
+        $this->getEntityManager()->persist($webauthnCredential);
+        $this->getEntityManager()->flush();
+    }
 
-//    public function findOneBySomeField($value): ?WebauthnCredential
-//    {
-//        return $this->createQueryBuilder('w')
-//            ->andWhere('w.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Trouve une credential par son ID (binaire)
+     */
+    public function findByCredentialId(string $credentialId): ?WebauthnCredential
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.publicKeyCredentialId = :id')
+            ->setParameter('id', $credentialId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
-public function saveCredential(User $user, PublicKeyCredentialSource $credentialSource): void
-{
-    // On "hydrate" notre entité avec les données du credential source
-    $webauthnCredential = new WebauthnCredential(
-        $credentialSource->getPublicKeyCredentialId(),
-        $credentialSource->getType(),
-        $credentialSource->getTransports(),
-        $credentialSource->getAttestationType(),
-        $credentialSource->getTrustPath(),
-        $credentialSource->getAaguid(),
-        $credentialSource->getCredentialPublicKey(),
-        $credentialSource->getUserHandle(),
-        $credentialSource->getCounter()
-    );
-    $webauthnCredential->setUser($user);
-    $this->getEntityManager()->persist($webauthnCredential);
-    $this->getEntityManager()->flush();
-}
+    /**
+     * Trouve toutes les credentials d'un utilisateur
+     */
+    public function findByUser(User $user): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 }
